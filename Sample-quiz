@@ -1,0 +1,40 @@
+def load_answers(filename):
+    answers = {}
+    with open(filename, 'r') as file:
+        for line in file:
+            question, answer = line.strip().split(':')
+            answers[question] = answer
+    return answers
+
+def take_quiz(questions, answers):
+    score = 0
+    total_questions = len(questions)
+
+    for question in questions:
+        print(question)
+        user_answer = input("Your answer: ")
+
+        if user_answer.lower() == answers[question].lower():
+            print("Correct!")
+            score += 1
+        else:
+            print("Incorrect!")
+
+    print(f"\nYou answered {score} out of {total_questions} questions correctly.")
+
+def main():
+    questions = [
+        "What is the capital of France?",
+        "Which planet is known as the Red Planet?",
+        "What is the largest ocean on Earth?"
+    ]
+
+    answer_file = 'answers.txt'
+    answers = load_answers(answer_file)
+
+    print("Welcome to the Quiz!")
+    print("Please answer the following questions:\n")
+    take_quiz(questions, answers)
+
+if __name__ == "__main__":
+    main()
