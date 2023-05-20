@@ -1,0 +1,114 @@
+#include <iostream>
+#include <xlsxwriter.h> // Include the libxlsxwriter library
+
+using namespace std;
+
+void rated(int, string[], float[]);
+
+int main()
+{
+    bool a = true;
+    float bob;
+    string topics[5];
+    float ratings[5] = {0};
+    char ch;
+    int num = 1;
+
+    cout << "Enter 5 current issues to rate: " << endl;
+    for (int i = 0; i < 5; i++)
+    {
+        cout << "Enter topic: ";
+        cin >> topics[i];
+    }
+
+    // Create an Excel workbook and worksheet
+    lxw_workbook *workbook = workbook_new("survey_results.xlsx");
+    lxw_worksheet *worksheet = workbook_add_worksheet(workbook, nullptr);
+
+    while (a)
+    {
+        cout << endl;
+        cout << "Survey Entry #" << num << endl;
+        cout << "Please rank the following issues on their importance to you, where 1 is least significant and 10 is most significant:" << endl;
+        for (int i = 0; i < 5; i++)
+        {
+            cout << topics[i] << ": ";
+            cin >> bob;
+            ratings[i] += bob;
+
+            // Write the survey data to the worksheet
+            worksheet_write_number(worksheet, num, i, bob, nullptr);
+        }
+
+        cout << "Do you want to continue? [Y]es or [No]: ";
+        cin >> ch;
+
+        if (ch == 'y' || ch == 'Y')
+        {
+            a = true;
+            num++;
+        }
+        else
+        {
+            cout << endl;
+            rated(num, topics, ratings);
+            a = false;
+        }
+    }
+
+    // Close the workbook to save the changes
+    workbook_close(workbook);
+
+    cout << "Goodbye" << endl;
+    return 0;
+}
+
+void rated(int x, string t[], float r[])
+{
+    // Output the survey results to the console
+    cout << "Results from " << x << " Survey Entries" << endl;
+    cout << "Topics\tTotal\tAverage\tMost Important\tLeast Important" << endl;
+    cout << "------\t-----\t-------\t--------------\t---------------" << endl;
+    float average[5];
+    int most = 0, least = 0;
+    float max = 0, min = 9999;
+
+    for (int j = 0; j < 5; j++)
+    {
+        average[j] = r[j] / static_cast<float>(x);
+    }
+
+    cout.precision(2);
+    cout.setf(ios::fixed);
+
+    for (int j = 0; j < 5; j++)
+    {
+        if (average[j] >= max)
+        {
+            max = average[j];
+            most = j;
+        }
+
+        if (average[j] <= min)
+        {
+            min = average[j];
+            least = j;
+        }
+    }
+
+    for (int n = 0; n < 5; n++)
+    {
+        if (n == most)
+        {
+            cout << t[n] << "\t " << r[n] << "\t " << average[n] << "\t " << t[n] << endl;
+        }
+        else if (n == least)
+        {
+            cout << t[n] << "\t " << r[n] << "\t " << average[n] << "\t\t\t" << t[n] << endl;
+        }
+        else
+        {
+            cout << t[n] << "\t " << r[n] << "\t " << average[n] << endl;
+        }
+    }
+}
